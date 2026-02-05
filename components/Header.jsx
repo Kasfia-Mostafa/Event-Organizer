@@ -2,6 +2,8 @@ import Image from "next/image";
 import React from "react";
 import logo from "../public/spott.png";
 import Link from "next/link";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Button } from "./ui/button";
 
 const Header = () => {
   return (
@@ -26,7 +28,18 @@ const Header = () => {
           </Link>
           {/* Pro */}
           {/* Search */}
-          {/* Right side */}
+          {/* Right side  actions */}
+          <div className="flex items-center">
+            <SignedIn>
+              {/* Create Event */}
+              <UserButton />
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button size="sm">Sign In</Button>
+              </SignInButton>
+            </SignedOut>
+          </div>
         </div>
         {/* Mobile Search */}
       </nav>
