@@ -14,7 +14,7 @@ import { Building, Plus, Ticket } from "lucide-react";
 const Header = () => {
   const { isLoading } = useStoreUser();
 
-  const [showUpgradeModal, setShowUpgradeModal] = useState();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   return (
     <>
@@ -46,7 +46,7 @@ const Header = () => {
               <Button
                 variant={"ghost"}
                 size={"sm"}
-                onClick={setShowUpgradeModal}
+                onClick={() => setShowUpgradeModal(true)}
               >
                 Pricing
               </Button>
