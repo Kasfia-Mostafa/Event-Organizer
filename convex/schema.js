@@ -2,69 +2,69 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  // Users table
+  // Users table: Handles Clerk authentication and user profiles
   users: defineTable({
-    // Clerk auth
+    // Auth & Basic Info
     email: v.string(),
-    tokenIdentifier: v.string(), // Clerk user ID for auth
+    tokenIdentifier: v.string(), // Clerk user ID for auth lookup
     name: v.string(),
     imageUrl: v.optional(v.string()),
 
-    // Onboarding
+    // Onboarding Status
     hasCompletedOnboarding: v.boolean(),
 
-    // Attendee preferences (from onboarding)
+    // Attendee preferences & Localized info
     location: v.optional(
       v.object({
         city: v.string(),
-        state: v.optional(v.string()), // Added state field
+        state: v.optional(v.string()),
         country: v.string(),
       }),
     ),
-    interests: v.optional(v.array(v.string())), // Min 3 categories
+    interests: v.optional(v.array(v.string())), // Array of category IDs
 
-    // Organizer tracking (User Subscription)
-    freeEventsCreated: v.number(), // Track free event limit (1 free)
+    // Organizer tracking
+    freeEventsCreated: v.number(), // Track free event limit (e.g., 1 free event per user)
 
     // Timestamps
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index("by_token", ["tokenIdentifier"]), // Primary auth lookup
+  }).index("by_token", ["tokenIdentifier"]),
 
-  // Events table
+  // Events table: Core table for the platform
   events: defineTable({
     title: v.string(),
     description: v.string(),
-    slug: v.string(),
+    slug: v.string(), // SEO friendly URL identifier
 
-    // Organizer
+    // Organizer Details
     organizerId: v.id("users"),
     organizerName: v.string(),
 
-    // Event details
-    category: v.string(),
+    // Classification
+    category: v.string(), // chand-raat, jamaat, dawat, etc.
     tags: v.array(v.string()),
 
-    // Date & Time
+    // Date & Time (Stored as Unix Timestamps)
     startDate: v.number(),
     endDate: v.number(),
-    timezone: v.string(),
+    timezone: v.string(), // e.g., "Asia/Dhaka"
 
-    // Location
+    // Location details
     locationType: v.union(v.literal("physical"), v.literal("online")),
     venue: v.optional(v.string()),
     address: v.optional(v.string()),
     city: v.string(),
-    state: v.optional(v.string()), // Added state field
+    state: v.optional(v.string()),
     country: v.string(),
 
     // Capacity & Ticketing
     capacity: v.number(),
     ticketType: v.union(v.literal("free"), v.literal("paid")),
-    ticketPrice: v.optional(v.number()), // Paid at event offline
+    ticketPrice: v.optional(v.number()), // Price in BDT (for Bangladesh context)
     registrationCount: v.number(),
 
-    // Customization
+    // Branding & UI Customization
     coverImage: v.optional(v.string()),
     themeColor: v.optional(v.string()),
 
@@ -76,25 +76,27 @@ export default defineSchema({
     .index("by_category", ["category"])
     .index("by_start_date", ["startDate"])
     .index("by_slug", ["slug"])
-    .searchIndex("search_title", { searchField: "title" }),
+    // Search index for global search functionality
+    .searchIndex("search_title", {
+        searchField: "title",
+        filterFields: ["category", "city"]
+    }),
 
-  // Registrations/Tickets
+  // Registrations table: Maps users to the events they are attending
   registrations: defineTable({
     eventId: v.id("events"),
     userId: v.id("users"),
 
-    // Attendee info
+    // Cached attendee info for quick display
     attendeeName: v.string(),
     attendeeEmail: v.string(),
 
-    // QR Code for entry
-    qrCode: v.string(), // Unique ID for QR
-
-    // Check-in
+    // Ticket & Entry
+    qrCode: v.string(), // Unique string for QR generation
     checkedIn: v.boolean(),
     checkedInAt: v.optional(v.number()),
 
-    // Status
+    // Status tracking
     status: v.union(v.literal("confirmed"), v.literal("cancelled")),
 
     registeredAt: v.number(),
