@@ -22,12 +22,12 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <ConvexClientProvider>
-            <ClerkProvider
-              appearance={{
-                theme: dark,
-              }}
-            >
+          <ClerkProvider
+            appearance={{
+              theme: dark,
+            }}
+          >
+            <ConvexClientProvider>
               {/* Header */}
               <Header />
               {/* Main Content */}
@@ -44,8 +44,8 @@ export default function RootLayout({ children }) {
                   Made by Kasfia Mostafa
                 </div>
               </footer>
-            </ClerkProvider>
-          </ConvexClientProvider>
+            </ConvexClientProvider>
+          </ClerkProvider>
         </ThemeProvider>
       </body>
     </html>
